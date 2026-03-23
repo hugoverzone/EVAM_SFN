@@ -1,0 +1,38 @@
+/* Swiss French Numbers App Styles (based on French vowels project) */
+:root {
+  --primary-bg: #f4f4f4;
+  --guide-color: #888;
+  --text-size: 16px;
+  --mobile-text-size: 14px;
+  --transition-duration: 0.15s;
+  --table-bg: #fff;
+  --accent: #4a6bd6;
+  --accent-alt: #5dade2;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--primary-bg);
+  text-align: center;
+  margin: 0; padding: 12px; line-height: 1.4;
+}
+h1 { margin-top: 10px; margin-bottom: 6px; font-size: 24px; color: #333; }
+p { margin: 5px 0 20px; font-size: 14px; color: #666; }
+.table-container { overflow-x: auto; margin: 0 auto; max-width: 100%; }
+table { border-collapse: collapse; width: 100%; max-width: 100%; background: var(--table-bg); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 10px; }
+th, td { padding: 10px 8px; border: 1px solid #e0e0e0; }
+th { background: var(--accent); color: #fff; text-transform: uppercase; letter-spacing: .04em; }
+tr:nth-child(even) { background: #fafafa; }
+.number-cell { font-weight: 700; color: var(--accent-alt); width: 75px; }
+.text-cell { text-align: left; }
+.btn { cursor: pointer; border: 0; border-radius: 6px; background: var(--accent); color: #fff; padding: 8px 14px; margin: 0 4px 8px; transition: background .2s ease; }
+.btn:hover { background: #3a59b0; }
+.btn:active { transform: translateY(1px); }
+.attribution { font-size: 12px; color: rgba(0,0,0,.55); margin-top: 20px; padding: 0 10px 10px; text-align:center; }
+.attribution a { color: rgba(0,0,0,.65); text-decoration:none; }
+@media (max-width: 480px) {
+  h1 { font-size: 20px; }
+  p { font-size: 12px; }
+  body { padding: 7px; }
+  th, td { padding: 8px 6px; }
+}
