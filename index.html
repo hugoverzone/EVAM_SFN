@@ -3,106 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss French Numbers</title>
+<title>Les nombres en français suisse</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<body>
+    <div class="top-banner">
+      <a href="https://www.evam.ch/" target="_blank" rel="noopener noreferrer">
+        <img src="../assets/images/logo_EVAM.png" alt="Logo" />
+      </a>
+    </div>
+    <h1>Les nombres en français suisse</h1>
+    <div class="table-container">
+    <table id="numbers-table" aria-label="Les nombres en Français suisse">
+        <thead>
+        <tr>
+            <th colspan="10">Les nombres en français suisse</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </div>
+    <footer class="attribution">
+      <p>Développé par <a href="https://verzone.ch" target="_blank" rel="noopener noreferrer">Hugo Verzone</a></p>
+    </footer>
+    <script>
+        const swissWords = {
+            0: 'zéro', 1: 'un', 2: 'deux', 3: 'trois', 4: 'quatre', 5: 'cinq',
+            6: 'six', 7: 'sept', 8: 'huit', 9: 'neuf', 10: 'dix', 11: 'onze',
+            12: 'douze', 13: 'treize', 14: 'quatorze', 15: 'quinze', 16: 'seize',
+            20: 'vingt', 30: 'trente', 40: 'quarante', 50: 'cinquante',
+            60: 'soixante', 70: 'septante', 80: 'huitante', 90: 'nonante', 100: 'cent'
+        };
 
-l="stylesheet" href="styles.css">
-e-width, initial-scale=1.0">
-00,10000,100000 et lecture audio.</p>
-<div>
-  <button class="btn" id="speak-1-100">Ecouter 1-100 vite</button>
-  <button class="btn" id="speak-special">Ecouter nombres spéciaux</button>
-</div>
-<div class="table-container">
-  <table id="numbers-table" aria-label="Swiss French number table">
-    <thead>
-      <tr>
-        <th>N°</th>
-        <th>Écrit (Suisse)</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-<footer class="attribution">
-  <p>Basé sur le projet French Vowels | Généré par l’outil interne de production.</p>
-</footer>
-<script>
-const swissMapping = {
-  0: 'zéro', 1: 'un', 2: 'deux', 3: 'trois', 4: 'quatre', 5: 'cinq', 6: 'six', 7: 'sept', 8: 'huit',
-  9: 'neuf', 10: 'dix', 11: 'onze', 12: 'douze', 13:'treize', 14:'quatorze', 15:'quinze', 16:'seize',
-  20:'vingt', 30:'trente', 40:'quarante', 50:'cinquante', 60:'soixante', 70:'septante',
-  80:'huitante', 90:'nonante', 100:'cent', 1000:'mille', 10000:'dix mille', 100000:'cent mille'
-};
+        function swissFrenchNumber(n) {
+            if (swissWords[n]) return swissWords[n];
+            if (n < 20) return `dix-${swissWords[n - 10]}`;
 
-function swissFrenchNumber(n) {
-  if (swissMapping[n]) return swissMapping[n];
-  if (n < 20) return 'dix-' + swissMapping[n-10];
-  if (n < 100) {
-    const ten = Math.floor(n/10) * 10;
-    const unit = n % 10;
-    let prefix = swissMapping[ten];
-    if (unit === 0) return prefix;
-    if (unit === 1 && ten !== 80) return `${prefix} et un`; // 21, 31... except 81 => huitante et un accepted too
-    return `${prefix}-${swissMapping[unit]}`;
-  }
-  if (n === 101) return 'cent un';
-  if (n === 102) return 'cent deux';
-  if (n === 1000 || n === 10000 || n === 100000) return swissMapping[n];
-  return n.toString();
-}
+            const tens = Math.floor(n / 10) * 10;
+            const units = n % 10;
+            if (units === 0) return swissWords[tens];
+            if (units === 1) return `${swissWords[tens]} et un`;
+            return `${swissWords[tens]}-${swissWords[units]}`;
+        }
 
-function createNumbersTable() {
-  const tbody = document.querySelector('#numbers-table tbody');
-  tbody.innerHTML = '';
-  for (let i=1; i<=100; i++) {
-    appendRow(i, swissFrenchNumber(i));
-  }
-  [101,102,1000,10000,100000].forEach(value => appendRow(value, swissFrenchNumber(value)));
-}
+        function speak(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('Synthèse vocale non supportée.');
+                return;
+            }
 
-function appendRow(num, text) {
-  const tbody = document.querySelector('#numbers-table tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td class="number-cell">${num}</td>
-    <td class="text-cell">${text}</td>
-    <td><button class="btn" data-number="${num}">Prononcer</button></td>
-  `;
-  tbody.appendChild(tr);
-}
+            const voices = window.speechSynthesis.getVoices();
+            const voice = voices.find((v) => v.lang.toLowerCase().startsWith('fr-ch'))
+                || voices.find((v) => v.lang.toLowerCase().startsWith('fr'))
+                || null;
 
-function speak(text) {
-  if (!('speechSynthesis' in window)) return alert('Synthèse vocale non supportée.');
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'fr-CH';
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
-}
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = voice ? voice.lang : 'fr-FR';
+            if (voice) utterance.voice = voice;
 
-document.addEventListener('click', event => {
-  if (event.target.matches('.btn[data-number]')) {
-    const num = Number(event.target.dataset.number);
-    speak(`${num} : ${swissFrenchNumber(num)}`);
-  }
-});
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
 
-document.getElementById('speak-1-100').addEventListener('click', () => {
-  const sequence = Array.from({length:100}, (_, i) => `${i+1}: ${swissFrenchNumber(i+1)}`).join('. ');
-  speak(sequence);
-});
-
-document.getElementById('speak-special').addEventListener('click', () => {
-  const keys = [101,102,1000,10000,100000];
-  const sequence = keys.map(n => `${n}: ${swissFrenchNumber(n)}`).join('. ');
-  speak(sequence);
-});
-
-createNumbersTable();
-</script>
+        const tbody = document.querySelector('#numbers-table tbody');
+        const fragment = document.createDocumentFragment();
+        for (let row = 0; row < 10; row++) {
+            const tr = document.createElement('tr');
+            for (let col = 1; col <= 10; col++) {
+                const number = row * 10 + col;
+                const label = swissFrenchNumber(number);
+                const td = document.createElement('td');
+                td.className = 'number-cell';
+                td.onclick = () => speak(label);
+                td.innerHTML = `${number}<br>${label}`;
+                tr.appendChild(td);
+            }
+            fragment.appendChild(tr);
+        }
+        tbody.appendChild(fragment);
+    </script>
 </body>
 </html>
