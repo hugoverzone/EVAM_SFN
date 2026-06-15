@@ -185,7 +185,28 @@
             }
 
             try {
-                speak(swissFrenchNumber(number));
+                // Count leading zeros
+                let leadingZeros = 0;
+                for (const char of rawValue) {
+                    if (char === '0') {
+                        leadingZeros++;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Build the text to speak
+                let textToSpeak = '';
+                if (leadingZeros > 0 && number !== 0) {
+                    // Add each leading zero
+                    for (let i = 0; i < leadingZeros; i++) {
+                        textToSpeak += 'zéro ';
+                    }
+                }
+                // Add the actual number
+                textToSpeak += swissFrenchNumber(number);
+
+                speak(textToSpeak);
             } catch (error) {
                 if (error instanceof RangeError || error instanceof TypeError) {
                     alert(error.message);
