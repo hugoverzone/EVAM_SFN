@@ -26,9 +26,9 @@
         <form class="number-speaker" id="number-speaker-form">
             <input
                 id="number-input"
-                type="number"
-                step="1"
+                type="text"
                 inputmode="numeric"
+                pattern="[0-9 ]*"
                 placeholder="Entrez un nombre"
                 aria-label="Entrez un nombre à prononcer"
             />
@@ -173,39 +173,35 @@
         const speakerForm = document.querySelector('#number-speaker-form');
         const numberInput = document.querySelector('#number-input');
 
+        function segmentToSpeech(segment) {
+            const firstNonZeroIndex = segment.search(/[^0]/);
+
+            if (firstNonZeroIndex === -1) {
+                return segment.split('').map(() => 'zéro').join(' ');
+            }
+
+            let speech = '';
+            if (firstNonZeroIndex > 0) {
+                speech = `${Array(firstNonZeroIndex).fill('zéro').join(' ')} `;
+            }
+
+            const valueWithoutLeadingZeros = Number(segment.slice(firstNonZeroIndex));
+            return `${speech}${swissFrenchNumber(valueWithoutLeadingZeros)}`;
+        }
+
         speakerForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const rawValue = numberInput.value.trim();
-            const number = Number(rawValue);
 
-            if (rawValue === '' || !Number.isInteger(number)) {
+            if (rawValue === '' || !/^\d+(?:\s+\d+)*$/.test(rawValue)) {
                 alert('Veuillez entrer un entier valide.');
                 numberInput.focus();
                 return;
             }
 
             try {
-                // Count leading zeros
-                let leadingZeros = 0;
-                for (const char of rawValue) {
-                    if (char === '0') {
-                        leadingZeros++;
-                    } else {
-                        break;
-                    }
-                }
-
-                // Build the text to speak
-                let textToSpeak = '';
-                if (leadingZeros > 0 && number !== 0) {
-                    // Add each leading zero
-                    for (let i = 0; i < leadingZeros; i++) {
-                        textToSpeak += 'zéro ';
-                    }
-                }
-                // Add the actual number
-                textToSpeak += swissFrenchNumber(number);
-
+                const segments = rawValue.split(/\s+/);
+                const textToSpeak = segments.map(segmentToSpeech).join(', ');
                 speak(textToSpeak);
             } catch (error) {
                 if (error instanceof RangeError || error instanceof TypeError) {
