@@ -38,6 +38,9 @@
       <p>Développé par <a href="https://hugo.verzone.ch" target="_blank" rel="noopener noreferrer">Hugo Verzone</a></p>
     </footer>
     <script>
+
+        MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 999999999999999;
+
         const swissWords = {
             0: 'zéro', 1: 'un', 2: 'deux', 3: 'trois', 4: 'quatre', 5: 'cinq',
             6: 'six', 7: 'sept', 8: 'huit', 9: 'neuf', 10: 'dix', 11: 'onze',
@@ -77,6 +80,12 @@
                 throw new TypeError('Le nombre doit être un entier.');
             }
 
+            if (n > MAX_SAFE_INTEGER) {
+                throw new RangeError('Le nombre est trop grand, essayez un nombre plus petit.');
+            }
+            if (n < -MAX_SAFE_INTEGER) {
+                throw new RangeError('Le nombre est trop petit, essayez un nombre plus grand.');
+            }
             if (n < 0) {
                 return `moins ${swissFrenchNumber(Math.abs(n))}`;
             }
@@ -175,7 +184,17 @@
                 return;
             }
 
-            speak(swissFrenchNumber(number));
+            try {
+                speak(swissFrenchNumber(number));
+            } catch (error) {
+                if (error instanceof RangeError || error instanceof TypeError) {
+                    alert(error.message);
+                    numberInput.focus();
+                    return;
+                }
+
+                throw error;
+            }
         });
     </script>
 </body>
